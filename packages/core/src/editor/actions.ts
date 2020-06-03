@@ -4,7 +4,7 @@ import {
   Nodes,
   Options,
   NodeEvents,
-  SerializedNodeData
+  SerializedNodeData,
 } from "../interfaces";
 import { EditorState, Indicator } from "../interfaces";
 import {
@@ -13,7 +13,7 @@ import {
   ROOT_NODE,
   CallbacksFor,
   QueryCallbacksFor,
-  ERROR_NOPARENT
+  ERROR_NOPARENT,
 } from "@craftjs/utils";
 import { QueryMethods } from "./query";
 import { updateEventsNode } from "../utils/updateEventsNode";
@@ -53,7 +53,7 @@ export const Actions = (
         dragged: null,
         selected: null,
         hovered: null,
-        indicator: null
+        indicator: null,
       };
     },
     setDOM(id: NodeId, dom: HTMLElement) {
@@ -74,13 +74,8 @@ export const Actions = (
      * Add a new Node(s) to the editor
      * @param nodes
      * @param parentId
-     * @param onError
      */
-    add(
-      nodes: Node[] | Node,
-      parentId?: NodeId,
-      onError?: (err, node) => void
-    ) {
+    add(nodes: Node[] | Node, parentId?: NodeId) {
       const isCanvas = (node: Node | NodeId) =>
         node &&
         (typeof node === "string"
@@ -91,7 +86,7 @@ export const Actions = (
       if (parentId && !state.nodes[parentId].data.nodes && isCanvas(parentId))
         state.nodes[parentId].data.nodes = [];
 
-      (nodes as Node[]).forEach(node => {
+      (nodes as Node[]).forEach((node) => {
         const parent = parentId ? parentId : node.data.parent;
         invariant(parent !== null, ERROR_NOPARENT);
 
@@ -102,15 +97,8 @@ export const Actions = (
           if (!parentNode.data._childCanvas) parentNode.data._childCanvas = {};
           node.data.parent = parentNode.id;
           parentNode.data._childCanvas[node.data.props.id] = node.id;
-          delete node.data.props.id;
         } else {
-          let error;
           if (parentId) {
-            query.node(parentId).isDroppable(node, err => {
-              error = err;
-            });
-            if (error) return onError && onError(error, node);
-
             if (parentNode.data.props.children)
               delete parentNode.data.props["children"];
 
@@ -141,7 +129,7 @@ export const Actions = (
         newParent = state.nodes[newParentId],
         newParentNodes = newParent.data.nodes;
 
-      query.node(newParentId).isDroppable(targetNode, err => {
+      query.node(newParentId).isDroppable(targetNode, (err) => {
         throw new Error(err);
       });
 
@@ -169,9 +157,11 @@ export const Actions = (
           !query.node(targetNode.id).isTopLevelCanvas(),
           "Cannot delete a Canvas that is not a direct child of another Canvas"
         );
-        targetNode.data.nodes!.forEach(childId => {
-          _("delete")(childId);
-        });
+        if (targetNode.data.nodes) {
+          [...targetNode.data.nodes].forEach((childId) => {
+            _("delete")(childId);
+          });
+        }
       }
 
       const parentNode = state.nodes[targetNode.data.parent],
@@ -222,7 +212,8 @@ export const Actions = (
             nodes,
             _childCanvas,
             isCanvas,
-            custom
+            hidden,
+            custom,
           } = deserializeNode(reducedNodes[id], state.options.resolver);
 
           if (!Comp) return accum;
@@ -231,11 +222,12 @@ export const Actions = (
             id,
             data: {
               ...(isCanvas && { isCanvas }),
+              ...(hidden && { hidden }),
               parent,
               ...(isCanvas && { nodes }),
               ...(_childCanvas && { _childCanvas }),
-              custom
-            }
+              custom,
+            },
           });
           return accum;
         },
@@ -246,9 +238,9 @@ export const Actions = (
         dragged: null,
         selected: null,
         hovered: null,
-        indicator: null
+        indicator: null,
       };
       state.nodes = rehydratedNodes;
-    }
+    },
   };
 };

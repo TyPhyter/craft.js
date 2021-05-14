@@ -1,8 +1,10 @@
-import { useContext, useMemo } from "react";
-import { LayerContext } from "./LayerContext";
-import { useLayerManager } from "../manager";
-import { useEditor } from "@craftjs/core";
-import { Layer } from "../interfaces";
+import { useEditor } from '@craftjs/core';
+import { useContext, useMemo } from 'react';
+
+import { LayerContext } from './LayerContext';
+
+import { Layer } from '../interfaces';
+import { useLayerManager } from '../manager';
 
 type internalActions = LayerContext & {
   children: string[];
@@ -24,7 +26,7 @@ export function useLayer<S = null>(collect?: (layer: Layer) => S): useLayer<S> {
   });
 
   const { children } = useEditor((state, query) => ({
-    children: state.nodes[id] && query.node(id).decendants(),
+    children: state.nodes[id] && query.node(id).descendants(),
   }));
 
   const actions = useMemo(() => {

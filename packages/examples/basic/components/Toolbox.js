@@ -1,15 +1,16 @@
-import React from "react";
+import { useEditor, Element } from '@craftjs/core';
 import {
   Box,
   Typography,
   Grid,
   Button as MaterialButton,
-} from "@material-ui/core";
-import { useEditor, Canvas } from "@craftjs/core";
-import { Container } from "./user/Container";
-import { Card } from "./user/Card";
-import { Button } from "./user/Button";
-import { Text } from "./user/Text";
+} from '@material-ui/core';
+import React from 'react';
+
+import { Button } from './user/Button';
+import { Card } from './user/Card';
+import { Container } from './user/Container';
+import { Text } from './user/Text';
 
 export const Toolbox = () => {
   const { connectors } = useEditor();
@@ -47,7 +48,10 @@ export const Toolbox = () => {
         <Grid container direction="column" item>
           <MaterialButton
             ref={(ref) =>
-              connectors.create(ref, <Canvas is={Container} padding={20} />)
+              connectors.create(
+                ref,
+                <Element canvas is={Container} padding={20} />
+              )
             }
             variant="contained"
           >

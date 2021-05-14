@@ -1,12 +1,12 @@
-import React from "react";
+import { useEditor } from '@craftjs/core';
 import {
   Box,
   Chip,
   Grid,
   Typography,
   Button as MaterialButton,
-} from "@material-ui/core";
-import { useEditor } from "@craftjs/core";
+} from '@material-ui/core';
+import React from 'react';
 
 export const SettingsPanel = () => {
   const { actions, selected } = useEditor((state, query) => {

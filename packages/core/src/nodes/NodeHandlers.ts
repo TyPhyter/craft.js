@@ -1,10 +1,10 @@
-import { DerivedEventHandlers } from "../events";
-import { ConnectorsForHandlers } from "@craftjs/utils";
+import { DerivedEventHandlers } from '../events';
+import { ConnectorsForHandlers } from '../utils/Handlers';
 
 /**
  * Creates Node-specific event handlers and connectors
  */
-export class NodeHandlers extends DerivedEventHandlers<"connect" | "drag"> {
+export class NodeHandlers extends DerivedEventHandlers<'connect' | 'drag'> {
   id;
 
   constructor(store, derived, nodeId) {
@@ -17,10 +17,7 @@ export class NodeHandlers extends DerivedEventHandlers<"connect" | "drag"> {
     return {
       connect: {
         init: (el) => {
-          parentConnectors.select(el, this.id);
-          parentConnectors.hover(el, this.id);
-          parentConnectors.drop(el, this.id);
-          this.store.actions.setDOM(this.id, el);
+          parentConnectors.connect(el, this.id);
         },
       },
       drag: {

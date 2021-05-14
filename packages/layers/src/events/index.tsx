@@ -1,7 +1,8 @@
-import React, { useMemo } from "react";
-import { useEditor } from "@craftjs/core";
-import { useLayerManager } from "../manager/useLayerManager";
-import { RenderIndicator } from "@craftjs/utils";
+import { useEditor } from '@craftjs/core';
+import { RenderIndicator } from '@craftjs/utils';
+import React, { useMemo } from 'react';
+
+import { useLayerManager } from '../manager/useLayerManager';
 
 export const EventManager: React.FC<any> = ({ children }) => {
   const { layers, events } = useLayerManager((state) => state);
@@ -31,8 +32,8 @@ export const EventManager: React.FC<any> = ({ children }) => {
           left: parentPos.left,
           width: parentPos.width,
           height: parentHeadingPos.height,
-          background: "transparent",
-          borderWidth: "1px",
+          background: 'transparent',
+          borderWidth: '1px',
           borderColor: color,
         };
       } else {
@@ -40,7 +41,7 @@ export const EventManager: React.FC<any> = ({ children }) => {
         const headingPos = layers[layerId].headingDom.getBoundingClientRect();
         const pos = layers[layerId].dom.getBoundingClientRect();
 
-        if (where === "after" || !currentNode) {
+        if (where === 'after' || !currentNode) {
           top = pos.top + pos.height;
         } else {
           top = pos.top;

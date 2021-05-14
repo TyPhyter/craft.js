@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { useNode } from "@craftjs/core";
-import ContentEditable from "react-contenteditable";
-import { Slider, FormControl, FormLabel } from "@material-ui/core";
+import { useNode } from '@craftjs/core';
+import { Slider, FormControl, FormLabel } from '@material-ui/core';
+import React, { useState, useEffect } from 'react';
+import ContentEditable from 'react-contenteditable';
 
 export const Text = ({ text, fontSize, textAlign }) => {
   const {
     connectors: { connect, drag },
     selected,
-    setProp,
+    actions: { setProp },
   } = useNode((state) => ({
     selected: state.events.selected,
     dragged: state.events.dragged,
@@ -16,13 +16,17 @@ export const Text = ({ text, fontSize, textAlign }) => {
   const [editable, setEditable] = useState(false);
 
   useEffect(() => {
-    !selected && setEditable(false);
+    if (selected) {
+      return;
+    }
+
+    setEditable(false);
   }, [selected]);
 
   return (
     <div
       ref={(ref) => connect(drag(ref))}
-      onClick={(e) => selected && setEditable(true)}
+      onClick={() => selected && setEditable(true)}
     >
       <ContentEditable
         html={text}
@@ -30,7 +34,8 @@ export const Text = ({ text, fontSize, textAlign }) => {
         onChange={(e) =>
           setProp(
             (props) =>
-              (props.text = e.target.value.replace(/<\/?[^>]+(>|$)/g, ""))
+              (props.text = e.target.value.replace(/<\/?[^>]+(>|$)/g, '')),
+            500
           )
         }
         tagName="p"
@@ -41,7 +46,10 @@ export const Text = ({ text, fontSize, textAlign }) => {
 };
 
 const TextSettings = () => {
-  const { setProp, fontSize } = useNode((node) => ({
+  const {
+    actions: { setProp },
+    fontSize,
+  } = useNode((node) => ({
     text: node.data.props.text,
     fontSize: node.data.props.fontSize,
   }));
@@ -56,7 +64,7 @@ const TextSettings = () => {
           min={1}
           max={50}
           onChange={(_, value) => {
-            setProp((props) => (props.fontSize = value));
+            setProp((props) => (props.fontSize = value), 1000);
           }}
         />
       </FormControl>
@@ -65,12 +73,12 @@ const TextSettings = () => {
 };
 
 export const TextDefaultProps = {
-  text: "Hi",
+  text: 'Hi',
   fontSize: 20,
 };
 
 Text.craft = {
-  defaultProps: TextDefaultProps,
+  props: TextDefaultProps,
   related: {
     settings: TextSettings,
   },

@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
-import cx from "classnames";
-import { useEditor } from "@craftjs/core";
-import { Toolbox } from "./Toolbox";
-import { Sidebar } from "./Sidebar";
-import { Header } from "./Header";
+import React, { useState, useEffect } from 'react';
+import cx from 'classnames';
+import { useEditor } from '@craftjs/core';
+import { Toolbox } from './Toolbox';
+import { Sidebar } from './Sidebar';
+import { Header } from './Header';
 import {
   Button as MaterialButton,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-} from "@material-ui/core";
+} from '@material-ui/core';
 export const Viewport: React.FC = ({ children }) => {
   const { enabled, connectors } = useEditor((state) => ({
     enabled: state.options.enabled,
@@ -27,10 +27,10 @@ export const Viewport: React.FC = ({ children }) => {
       setTimeout(() => {
         if (
           localStorage &&
-          localStorage.getItem("craftjs-demo-notice") != "set"
+          localStorage.getItem('craftjs-demo-notice') != 'set'
         ) {
           setDialog(true);
-          localStorage.setItem("craftjs-demo-notice", "set");
+          localStorage.setItem('craftjs-demo-notice', 'set');
         }
         setTimeout(() => {
           if (!unmounted) setMouseEnabled(true);
@@ -45,9 +45,9 @@ export const Viewport: React.FC = ({ children }) => {
 
   return (
     <div
-      className={cx(["viewport"], {
+      className={cx(['viewport'], {
         loaded: loaded,
-        "mouse-enabled": mouseEnabled,
+        'mouse-enabled': mouseEnabled,
       })}
     >
       <Dialog
@@ -57,7 +57,7 @@ export const Viewport: React.FC = ({ children }) => {
         onClose={() => setDialog(false)}
         disableBackdropClick={true}
       >
-        <DialogTitle>{"Keep the following in mind"}</DialogTitle>
+        <DialogTitle>{'Keep the following in mind'}</DialogTitle>
         <DialogContent>
           <ul className="px-5 list-disc" style={{ opacity: 0.85 }}>
             <li>
@@ -84,11 +84,11 @@ export const Viewport: React.FC = ({ children }) => {
       </Dialog>
       <Header />
       <div
-        style={{ paddingTop: "59px" }}
+        style={{ paddingTop: '59px' }}
         className={cx([
-          "flex h-full overflow-hidden flex-row w-full",
+          'flex h-full overflow-hidden flex-row w-full',
           {
-            "h-full": !enabled,
+            'h-full': !enabled,
             fixed: enabled,
             relative: !enabled,
           },
@@ -99,10 +99,10 @@ export const Viewport: React.FC = ({ children }) => {
           <div className="w-full h-full">
             <div
               className={cx([
-                "craftjs-renderer h-full  w-full transition",
+                'craftjs-renderer h-full w-full transition pb-8',
                 {
-                  "overflow-auto": enabled,
-                  "bg-renderer-gray": enabled,
+                  'overflow-auto': enabled,
+                  'bg-renderer-gray': enabled,
                 },
               ])}
               ref={(ref) =>
@@ -111,13 +111,22 @@ export const Viewport: React.FC = ({ children }) => {
             >
               <div
                 className={cx([
-                  "relative flex-col flex items-center pb-8",
+                  'relative flex-col flex items-center',
                   {
-                    "pt-8": enabled,
+                    'pt-8': enabled,
                   },
                 ])}
               >
                 {children}
+              </div>
+              <div
+                className={
+                  'flex items-center justify-center w-full pt-6 text-xs text-light-gray-2'
+                }
+              >
+                <a href="https://www.netlify.com">
+                  This site is powered by Netlify
+                </a>
               </div>
             </div>
           </div>

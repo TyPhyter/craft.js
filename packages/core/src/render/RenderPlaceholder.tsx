@@ -1,6 +1,7 @@
-import React from "react";
-import { Indicator } from "../interfaces";
-import { useEditor } from "../hooks";
+import React from 'react';
+
+import { useEditor } from '../hooks';
+import { Indicator } from '../interfaces';
 
 export type Placeholder = {
   placeholder: Indicator;
@@ -18,13 +19,13 @@ export const RenderPlaceholder: React.FC<Placeholder> = ({
   return (
     <div
       style={{
-        position: "fixed",
-        display: "block",
+        position: 'fixed',
+        display: 'block',
         opacity: 1,
         borderColor: placeholder.error ? indicator.error : indicator.success,
-        borderStyle: "solid",
-        borderWidth: "1px",
-        zIndex: "99999",
+        borderStyle: 'solid',
+        borderWidth: '1px',
+        zIndex: '99999',
         ...suggestedStyles,
       }}
     ></div>

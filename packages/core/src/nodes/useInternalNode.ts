@@ -1,25 +1,32 @@
-import { useContext, useMemo } from "react";
-import { NodeContext, NodeProvider } from "./NodeContext";
-import { Node } from "../interfaces";
-import { useInternalEditor } from "../editor/useInternalEditor";
+import { useMemo, useContext } from 'react';
+
+import { NodeContext, NodeProvider } from './NodeContext';
+import { NodeConnectors } from './NodeHandlers';
+
+import { useInternalEditor } from '../editor/useInternalEditor';
+import { Node } from '../interfaces';
 
 type internalActions = NodeProvider & {
   inNodeContext: boolean;
+  connectors: NodeConnectors;
   actions: {
-    setProp: (cb: any) => void;
+    setProp: (cb: (props: any) => void, throttleRate?: number) => void;
+    setCustom: (cb: (custom: any) => void, throttleRate?: number) => void;
+    setHidden: (bool: boolean) => void;
   };
 };
 
-export type useInternalNode<S = null> = S extends null
+// TODO: Deprecate useInternalNode in favor of useNode
+export type useInternalNodeReturnType<S = null> = S extends null
   ? internalActions
   : S & internalActions;
-export function useInternalNode(): useInternalNode;
+export function useInternalNode(): useInternalNodeReturnType;
 export function useInternalNode<S = null>(
   collect?: (node: Node) => S
-): useInternalNode<S>;
+): useInternalNodeReturnType<S>;
 export function useInternalNode<S = null>(
   collect?: (node: Node) => S
-): useInternalNode<S> {
+): useInternalNodeReturnType<S> {
   const context = useContext(NodeContext);
   const { id, related, connectors } = context;
 
@@ -29,7 +36,21 @@ export function useInternalNode<S = null>(
 
   const actions = useMemo(() => {
     return {
-      setProp: (cb: any) => EditorActions.setProp(id, cb),
+      setProp: (cb: any, throttleRate?: number) => {
+        if (throttleRate) {
+          EditorActions.history.throttle(throttleRate).setProp(id, cb);
+        } else {
+          EditorActions.setProp(id, cb);
+        }
+      },
+      setCustom: (cb: any, throttleRate?: number) => {
+        if (throttleRate) {
+          EditorActions.history.throttle(throttleRate).setCustom(id, cb);
+        } else {
+          EditorActions.setCustom(id, cb);
+        }
+      },
+      setHidden: (bool: boolean) => EditorActions.setHidden(id, bool),
     };
   }, [EditorActions, id]);
 

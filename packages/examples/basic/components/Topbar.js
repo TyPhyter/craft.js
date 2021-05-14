@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useEditor } from '@craftjs/core';
 import {
   Box,
   FormControlLabel,
@@ -11,15 +11,19 @@ import {
   DialogActions,
   TextField,
   Snackbar,
-} from "@material-ui/core";
-import { useEditor } from "@craftjs/core";
-import lz from "lzutf8";
-import copy from "copy-to-clipboard";
+} from '@material-ui/core';
+import copy from 'copy-to-clipboard';
+import lz from 'lzutf8';
+import React, { useState } from 'react';
 
-export const Topbar = ({ onLoadState }) => {
-  const { actions, query, enabled } = useEditor((state) => ({
-    enabled: state.options.enabled,
-  }));
+export const Topbar = () => {
+  const { actions, query, enabled, canUndo, canRedo } = useEditor(
+    (state, query) => ({
+      enabled: state.options.enabled,
+      canUndo: query.history.canUndo(),
+      canRedo: query.history.canRedo(),
+    })
+  );
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState();
@@ -42,6 +46,28 @@ export const Topbar = ({ onLoadState }) => {
             }
             label="Enable"
           />
+          <MaterialButton
+            className="copy-state-btn"
+            size="small"
+            variant="outlined"
+            color="secondary"
+            disabled={!canUndo}
+            onClick={() => actions.history.undo()}
+            style={{ marginRight: '10px' }}
+          >
+            Undo
+          </MaterialButton>
+          <MaterialButton
+            className="copy-state-btn"
+            size="small"
+            variant="outlined"
+            color="secondary"
+            disabled={!canRedo}
+            onClick={() => actions.history.redo()}
+            style={{ marginRight: '10px' }}
+          >
+            Redo
+          </MaterialButton>
         </Grid>
         <Grid item>
           <MaterialButton
@@ -52,9 +78,9 @@ export const Topbar = ({ onLoadState }) => {
             onClick={() => {
               const json = query.serialize();
               copy(lz.encodeBase64(lz.compress(json)));
-              setSnackbarMessage("State copied to clipboard");
+              setSnackbarMessage('State copied to clipboard');
             }}
-            style={{ marginRight: "10px" }}
+            style={{ marginRight: '10px' }}
           >
             Copy current state
           </MaterialButton>
@@ -80,7 +106,7 @@ export const Topbar = ({ onLoadState }) => {
                 fullWidth
                 placeholder='Paste the contents that was copied from the "Copy Current State" button'
                 size="small"
-                value={stateToLoad || ""}
+                value={stateToLoad || ''}
                 onChange={(e) => setStateToLoad(e.target.value)}
               />
             </DialogContent>
@@ -96,7 +122,7 @@ export const Topbar = ({ onLoadState }) => {
                   setDialogOpen(false);
                   const json = lz.decompress(lz.decodeBase64(stateToLoad));
                   actions.deserialize(json);
-                  setSnackbarMessage("State loaded");
+                  setSnackbarMessage('State loaded');
                 }}
                 color="primary"
                 autoFocus
@@ -107,7 +133,10 @@ export const Topbar = ({ onLoadState }) => {
           </Dialog>
           <Snackbar
             autoHideDuration={1000}
-            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center',
+            }}
             open={!!snackbarMessage}
             onClose={() => setSnackbarMessage(null)}
             message={<span>{snackbarMessage}</span>}
